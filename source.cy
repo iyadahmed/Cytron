@@ -1,13 +1,14 @@
 import io.print;
 
 
-int arr[];
-
 int main()
 {
+    int arr[];
 
-    for (i in range(10))
+    for (int i = 0; i < 10; i++)
+    {
         arr.push(i);
+    }
     
     print("❤️");
     return 0;
