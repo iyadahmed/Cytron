@@ -9,8 +9,8 @@
 #include <windows.h>
 #endif
 
-#include "c_utils/common.h"
-#include "c_utils/utf8.h"
+#include <common.h>
+#include <utf8.h>
 
 STRUCT(buffer_t)
 {
