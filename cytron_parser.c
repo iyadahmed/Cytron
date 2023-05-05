@@ -31,10 +31,13 @@ void push_back_to_buffer(buffer_t* buffer, char value)
 {
     if (buffer->size == buffer->cap) {
         buffer->cap *= 2;
-        buffer->mem = realloc(buffer->mem, buffer->cap);
-        if (buffer->mem == NULL) {
+        void* new_mem = realloc(buffer->mem, buffer->cap);
+        if (new_mem == NULL) {
+            free(buffer->mem);
             bail("Failed to re-allocate memory");
+            return;
         }
+        buffer->mem = new_mem;
     }
 
     buffer->mem[buffer->size] = value;
@@ -49,10 +52,12 @@ char* allocate_from_buffer(buffer_t* buffer, size_t n)
 {
     if ((buffer->size + n) > buffer->cap) {
         buffer->cap = (buffer->cap + n) * 2;
-        buffer->mem = realloc(buffer->mem, buffer->cap);
-        if (buffer->mem == NULL) {
+        void* new_mem = realloc(buffer->mem, buffer->cap);
+        if (new_mem == NULL) {
+            free(buffer->mem);
             bail("Failed to re-allocate memory");
         }
+        buffer->mem = new_mem;
     }
 
     char* result = (buffer->mem + buffer->size);
@@ -68,10 +73,12 @@ void truncate_and_shrink_buffer(buffer_t* buffer, size_t new_size)
 
     buffer->size = new_size;
     buffer->cap = new_size;
-    buffer->mem = realloc(buffer->mem, new_size);
-    if (buffer->mem == NULL) {
+    void* new_mem = realloc(buffer->mem, new_size);
+    if (new_mem == NULL) {
+        free(buffer->mem);
         bail("Failed to re-allocate memory");
     }
+    buffer->mem = new_mem;
 }
 
 int main(int argc, char** argv)
@@ -87,8 +94,9 @@ int main(int argc, char** argv)
     }
 
     FILE* file = fopen(argv[1], "rb");
-    if (file == NULL) {
-        bail("Failed to open file");
+    if (file == 0) {
+        puts("Failed to open file");
+        return 0;
     }
 
     // Read entire source code into memory
